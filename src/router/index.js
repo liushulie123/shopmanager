@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+// webpack项目模板
+import Login from '@/components/login.vue'
+import Home from '@/components/home.vue'
 
 Vue.use(Router)
 
@@ -7,7 +10,12 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'login'
+      name: 'home',
+      component: Home
+    }, {
+      path: '/login',
+      name: 'login',
+      component: Login
     }
   ]
 })

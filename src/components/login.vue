@@ -26,8 +26,32 @@ export default {
     }
   },
   methods: {
-    handlelogin () {
-      this.$http
+    async handlelogin () {
+        // 目前代码：异步的结果res 在一个函数里面获取的
+        // 目的：res的获取是同步
+      const res = await this.$http.post(`login`, this.formdata)
+      const {
+        data: {
+          data:{token},
+          meta: {msg, status}
+        }
+      } = res
+      if(status === 200) {
+        // 提示：token这个值目前不需要关心。 将来要用。把token永久存储
+        // session/cookie/localStorage(Html5新特性)
+        // key名:要存储的数据
+        localStorage.setItem('token',token)
+        this.$router.push({
+          name:"home"
+        })
+      } else {
+        this.$message.error(msg)
+      }
+    }
+  }
+}
+/*
+this.$http
         .post(`login`, this.formdata)
         .then(res => {
           // 前提：api-server启动node app.js
@@ -38,16 +62,13 @@ export default {
               meta: {msg, status}
             }} = res
           if(status === 200) {
-            console.log('login---success----')
+            name:"home"
           } else {
-            console.log('login---error----')
+            this.$message.error(msg)
           }
         })
-    }
-  }
-}
+*/ 
 </script>
-
 <style>
 .login-wrap {
   height: 100%;

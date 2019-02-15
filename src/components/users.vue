@@ -56,11 +56,24 @@
                     {{scope.row.create_time|fmtdate}}
                 </template>
             </el-table-column>
-            <el-table-column prop="address" label="用户状态" width="120">
+            <el-table-column label="用户状态" width="120">
+                <!-- 前提:单元格内容是一个组件,不是porp的值 -->
+                <template slot-scope="scope">
+                    <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949">
+                    </el-switch>
+                </template>
             </el-table-column>
-            <el-table-column prop="address" label="操作" width="200">
+            <el-table-column label="操作" width="200">
+                <template slot-scope="scope">
+                    <el-button plain size="mini" type="primary" icon="el-icon-edit" circle></el-button>
+                    <el-button plain size="mini" type="danger" icon="el-icon-delete" circle></el-button>
+                    <el-button plain size="mini" type="success" icon="el-icon-check" circle></el-button>
+                </template>
             </el-table-column>
         </el-table>
+        <!-- 分页 -->
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pagenum" :page-sizes="[1,3,5]" :page-size="2" layout="total, sizes, prev, pager, next, jumper" :total="total">
+        </el-pagination>
     </el-card>
 </template>
 
@@ -72,7 +85,8 @@ export default {
             query: '',
             // 分页->前提借口必须支持分页->通常在接口url参数中类似page的参数名
             pagenum: 1,
-            pagesize: 10,
+            pagesize: 2,
+            total:-1,
             // 表格数据
             list: []
         }
@@ -81,6 +95,19 @@ export default {
         this.getTbableData()
     },
     methods: {
+        //分页相关的方法
+        handleSizeChange(val) {
+            console.log(`每页 ${val} 条`)
+            this.pagenum = 1
+            this.pagesize = val 
+            this.getTbableData()
+        },
+        handleCurrentChange(val) {
+            console.log(`当前页: ${val}`)
+            //根据新页码发送请求
+            this.pagenum = val
+            this.getTbableData()
+        },
         async getTbableData() {
             // `${name}`
 
@@ -96,6 +123,7 @@ export default {
             const res = await this.$http.get(`users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
             const { data, meta: { status, msg } } = res.data
             if (status === 200) {
+                this.total = data.total
                 this.list = data.users
                 // console.log(this.list)
             }

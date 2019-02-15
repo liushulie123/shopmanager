@@ -26,7 +26,7 @@
               <span>用户管理</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="1-1">
+              <el-menu-item index="users">
                 <i class="el-icon-service"></i>用户列表</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
@@ -84,7 +84,10 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main class="main">Main</el-main>
+      <el-main class="main">
+        <!-- 提供容器 -->
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -104,7 +107,7 @@ export default {
     }
   },
   methods: {
-    handleLoginout() {
+    handleLoginout () {
       // 1.清除token
       localStorage.clear()
       // 2.跳转到Login

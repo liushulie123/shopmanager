@@ -298,8 +298,6 @@ export default {
             // }
             // 设置请求头
             // 设置发送请求时的请求头->axios库->找axios中有没有可以设置headers头部的API->看axios文档
-            const AUTH_TOKEN = localStorage.getItem('token')
-            this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
             const res = await this.$http.get(`users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
             const { data, meta: { status, msg } } = res.data
             if (status === 200) {

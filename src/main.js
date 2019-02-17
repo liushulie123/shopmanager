@@ -6,10 +6,12 @@ import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/css/base.css'
 import App from './App'
 import router from './router'
-import axios from 'axios'
+import CusBread from './components/cusBread.vue'
 import moment from 'moment'
-axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
-Vue.prototype.$http = axios
+import HttpServer from './components/http'
+
+Vue.use(HttpServer)
+
 // ElementUI 其实Vue插件,和VueRouter 用法一样 Vue.use（名）
 // Vue 插件的使用
 Vue.use(ElementUI)
@@ -20,6 +22,9 @@ Vue.config.productionTip = false
 Vue.filter('fmtdate', (v) => {
   return moment(v).format('YYYY-MM-DD')
 })
+
+// 全局自定义组件
+Vue.component(CusBread.name, CusBread)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

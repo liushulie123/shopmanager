@@ -40,7 +40,7 @@
                 <i class="el-icon-service"></i>角色列表</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group>
-              <el-menu-item index="1-1">
+              <el-menu-item index="rights">
                 <i class="el-icon-service"></i>权限列表</el-menu-item>
             </el-menu-item-group>
           </el-submenu>

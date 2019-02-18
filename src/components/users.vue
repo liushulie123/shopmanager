@@ -21,7 +21,7 @@
             </el-col>
         </el-row>
         <!-- 表格 -->
-        <!-- tableData是[{data:?,name:?.address:?}] 
+        <!-- tableData是[{data:?,name:?.address:?}]
         el-table-column 控制列
         label控制的是表头
         prop控制的是该列中每一行单元格内容
@@ -123,10 +123,10 @@
                     <el-select v-model="selectVal" placeholder="请选择角色名称">
                         <el-option label="请选择" :value="-1"></el-option>
                         <!-- 其余5个option是动态生成的 v-for-->
-                        <el-option 
+                        <el-option
                         :label = 'item.roleName'
                         :value="item.id"
-                        v-for="(item) in roles" :key="item.id"></el-option>                        
+                        v-for="(item) in roles" :key="item.id"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -140,173 +140,170 @@
 
 <script>
 export default {
-    data() {
-        return {
-            // 搜索关键字
-            query: '',
-            // 分页->前提借口必须支持分页->通常在接口url参数中类似page的参数名
-            pagenum: 1,
-            pagesize: 1,
-            total: -1,
-            // 表格数据
-            list: [],
-            dialogFormVisibleAdd: false,
-            dialogFormVisibleEdit: false,
-            dialogFormVisibleRole:false,
-            formdata: {
-                username: '',
-                password: '',
-                email: '',
-                mobile: ''
-            },
-            //下拉框使用的数据
-            selectVal:-1,
-            //保存角色的数据
-            roles:[],
-            currUsername:'',
-            currUserId:-1
-        }
+  data () {
+    return {
+      // 搜索关键字
+      query: '',
+      // 分页->前提借口必须支持分页->通常在接口url参数中类似page的参数名
+      pagenum: 1,
+      pagesize: 1,
+      total: -1,
+      // 表格数据
+      list: [],
+      dialogFormVisibleAdd: false,
+      dialogFormVisibleEdit: false,
+      dialogFormVisibleRole: false,
+      formdata: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      // 下拉框使用的数据
+      selectVal: -1,
+      // 保存角色的数据
+      roles: [],
+      currUsername: '',
+      currUserId: -1
+    }
+  },
+  created () {
+    this.getTbableData()
+  },
+  methods: {
+    // 分配角色 - 发送请求
+    async setRole () {
+      // 发送请求
+      const res = await this.$http.put(`users/${this.currUserId}/role`, {rid: this.selectVal})
+      const {meta: {msg, status}, data} = res.data
+      if (status === 200) {
+        this.dialogFormVisibleRole = false
+        this.$message.success(msg)
+      }
+      // 关闭对话框
     },
-    created() {
+    // // 分配角色 - 显示对话框
+    async showDiaSetRole (user) {
+      this.currUserId = user.id
+      this.currUsername = user.username
+      this.dialogFormVisibleRole = true
+      // 获取所有角色名称(5个)
+      const res = await this.$http.get(`roles`)
+      const {meta: {msg, status}, data} = res.data
+      if (status === 200) {
+        this.roles = data
+      }
+
+      // 获取当前用户的角色id
+      const res2 = await this.$http.get(`users/${user.id}`)
+      // const {meta:{msg2,status2},data2} = res2.data
+      // if(status === 200){
+      this.selectVal = res2.data.data.rid
+      // }
+    },
+    // 修改用户状态
+    async changeState (user) {
+      const res = await this.$http.put(`users/${user.id}/state/${user.mg_state}`)
+      const { meta: { status, msg } } = res.data
+      if (status === 200) {
+        this.$message.success(msg)
+      }
+    },
+    // 编辑 - 发送请求
+    async editUser () {
+      const res = await this.$http.put(`users/${this.formdata.id}`, this.formdata)
+      // 使用this.formdata  必须确保是有值的
+      const { meta: { msg, status } } = res.data
+      if (status === 200) {
+        this.dialogFormVisibleEdit = false
+        this.$message.success(msg)
         this.getTbableData()
+      } else {
+        this.$message.error(msg)
+      }
     },
-    methods: {
-        //分配角色 - 发送请求
-        async setRole(){
-            //发送请求
-            const res = await this.$http.put(`users/${this.currUserId}/role`,{rid:this.selectVal})
-            const {meta:{msg,status},data} = res.data
-            if(status === 200){
-                this.dialogFormVisibleRole = false
-                this.$message.success(msg)
-            }            
-            //关闭对话框
-        },
-        // // 分配角色 - 显示对话框
-        async showDiaSetRole(user){
-            this.currUserId = user.id
-            this.currUsername = user.username 
-            this.dialogFormVisibleRole = true
-            //获取所有角色名称(5个)
-            const res = await this.$http.get(`roles`)
-            const {meta:{msg,status},data} = res.data
-            if(status === 200){
-                this.roles = data
-            }
-
-            // 获取当前用户的角色id
-            const res2 = await this.$http.get(`users/${user.id}`)
-            // const {meta:{msg2,status2},data2} = res2.data
-            // if(status === 200){
-                this.selectVal = res2.data.data.rid
-            // }
-        },
-        // 修改用户状态
-        async changeState(user) {
-            const res = await this.$http.put(`users/${user.id}/state/${user.mg_state}`)
-            const { meta: { status, msg } } = res.data
-            if (status === 200) {
-                this.$message.success(msg)
-            }
-        },
-        // 编辑 - 发送请求
-        async editUser() {
-            const res = await this.$http.put(`users/${this.formdata.id}`, this.formdata)
-            // 使用this.formdata  必须确保是有值的
-            const { meta: { msg, status } } = res.data
-            if (status === 200) {
-                this.dialogFormVisibleEdit = false
-                this.$message.success(msg)
-                this.getTbableData()
-            } else {
-                this.$message.error(msg)
-            }
-
-        },
-        // 编辑- 显示对话框
-        async showDiaEditUser(user) {
-            const res = await this.$http.get(`users/${user.id}`)
-            // 使用this.formdata  必须确保是有值的
-            this.formdata = res.data.data
-            this.dialogFormVisibleEdit = true
-        },
-        //删除 - 弹出确认框
-        async showMsgBox(user) {
-            this.$confirm('是否删除用户?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            })
-                .then(async () => {
-                    //发送请求
-                    const res = await this.$http.delete(`users/${user.id}`)
-                    const { meta: { msg, status } } = res.data
-                    if (status === 200) {
-                        //提示框
-                        this.$message.success(msg)
-                        this.pagenum = 1
-                        this.getTbableData()
-                    }
-                }).catch(() => {
-                    this.$message.info("已取消删除")
-                });
-        },
-        //添加用户-发送请求
-        async addUser() {
-            //获取表单数据  发送请求
-            const res = await this.$http.post(`users`, this.formdata)
-            //关闭对话框
-            this.dialogFormVisibleAdd = false;
-            //更新表格
-            this.getTbableData();
-        },
-        //添加用户-展示对话框
-        showDiaAddUsers() {
-            this.formdata = {}
-            this.dialogFormVisibleAdd = true
-        },
-        //清空时获取所有用户
-        getAllUsers() {
-            this.getTbableData()
-        },
-        //搜索用户
-        searchUser() {
-            // query数据默认''
+    // 编辑- 显示对话框
+    async showDiaEditUser (user) {
+      const res = await this.$http.get(`users/${user.id}`)
+      // 使用this.formdata  必须确保是有值的
+      this.formdata = res.data.data
+      this.dialogFormVisibleEdit = true
+    },
+    // 删除 - 弹出确认框
+    async showMsgBox (user) {
+      this.$confirm('是否删除用户?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async () => {
+          // 发送请求
+          const res = await this.$http.delete(`users/${user.id}`)
+          const { meta: { msg, status } } = res.data
+          if (status === 200) {
+            // 提示框
+            this.$message.success(msg)
             this.pagenum = 1
             this.getTbableData()
-        },
-        //分页相关的方法
-        handleSizeChange(val) {
-            console.log(`每页 ${val} 条`)
-            this.pagenum = 1
-            this.pagesize = val
-            this.getTbableData()
-        },
-        handleCurrentChange(val) {
-            console.log(`当前页: ${val}`)
-            //根据新页码发送请求
-            this.pagenum = val
-            this.getTbableData()
-        },
-        async getTbableData() {
-            // `${name}`
-
-            // 请求头
-            // {
-            //     contentType:'text/html';
-            //     Authorization:?
-            // }
-            // 设置请求头
-            // 设置发送请求时的请求头->axios库->找axios中有没有可以设置headers头部的API->看axios文档
-            const res = await this.$http.get(`users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
-            const { data, meta: { status, msg } } = res.data
-            if (status === 200) {
-                this.total = data.total
-                this.list = data.users
-                // console.log(this.list)
-            }
-        }
+          }
+        }).catch(() => {
+          this.$message.info('已取消删除')
+        })
     },
+    // 添加用户-发送请求
+    async addUser () {
+      // 获取表单数据  发送请求
+      const res = await this.$http.post(`users`, this.formdata)
+      // 关闭对话框
+      this.dialogFormVisibleAdd = false
+      // 更新表格
+      this.getTbableData()
+    },
+    // 添加用户-展示对话框
+    showDiaAddUsers () {
+      this.formdata = {}
+      this.dialogFormVisibleAdd = true
+    },
+    // 清空时获取所有用户
+    getAllUsers () {
+      this.getTbableData()
+    },
+    // 搜索用户
+    searchUser () {
+      // query数据默认''
+      this.pagenum = 1
+      this.getTbableData()
+    },
+    // 分页相关的方法
+    handleSizeChange (val) {
+      this.pagenum = 1
+      this.pagesize = val
+      this.getTbableData()
+    },
+    handleCurrentChange (val) {
+      // 根据新页码发送请求
+      this.pagenum = val
+      this.getTbableData()
+    },
+    async getTbableData () {
+      // `${name}`
+
+      // 请求头
+      // {
+      //     contentType:'text/html';
+      //     Authorization:?
+      // }
+      // 设置请求头
+      // 设置发送请求时的请求头->axios库->找axios中有没有可以设置headers头部的API->看axios文档
+      const res = await this.$http.get(`users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
+      const { data, meta: { status, msg } } = res.data
+      if (status === 200) {
+        this.total = data.total
+        this.list = data.users
+        // console.log(this.list)
+      }
+    }
+  }
 }
 </script>
 

@@ -15,16 +15,16 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       formdata: {
-        username: "",
-        password: ""
+        username: '',
+        password: ''
       }
     }
   },
   methods: {
-    async handlelogin() {
+    async handlelogin () {
       // 目前代码：异步的结果res 在一个函数里面获取的
       // 目的：res的获取是同步
       const res = await this.$http.post(`login`, this.formdata)
@@ -33,10 +33,10 @@ export default {
         // 提示：token这个值目前不需要关心。 将来要用。把token永久存储
         // session/cookie/localStorage(Html5新特性)
         // key名:要存储的数据
-        localStorage.setItem("token", data.token)
+        localStorage.setItem('token', data.token)
         this.$router.push({
-          name: "home"
-        });
+          name: 'home'
+        })
       } else {
         this.$message.error(msg)
       }

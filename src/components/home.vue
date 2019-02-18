@@ -20,66 +20,15 @@
         <!-- 导航 -->
         <!-- router :开启路由模式,点击对应的导航,当前的path就是激活导航的index值 -->
         <el-menu default-active="1" :router="true" :unique-opened="true">
-          <el-submenu index="1">
+          <!-- 用户管理 -->
+          <el-submenu :index="item1.order+''" v-for="(item1) in menus" :key="item1.id">
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>用户管理</span>
+              <span>{{ item1.authName }}</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="users">
-                <i class="el-icon-service"></i>用户列表</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-          <el-submenu index="2">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>权限管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="1-1">
-                <i class="el-icon-service"></i>角色列表</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group>
-              <el-menu-item index="rights">
-                <i class="el-icon-service"></i>权限列表</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-          <el-submenu index="3">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>商品管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="1-1">
-                <i class="el-icon-service"></i>商品列表</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group>
-              <el-menu-item index="1-1">
-                <i class="el-icon-service"></i>分类参数</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group>
-              <el-menu-item index="1-1">
-                <i class="el-icon-service"></i>商品分类</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-          <el-submenu index="4">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>订单管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="1-1">
-                <i class="el-icon-service"></i>订单列表</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-          <el-submenu index="5">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>数据统计</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="1-1">
-                <i class="el-icon-service"></i>数据报表</el-menu-item>
+              <el-menu-item :index="item2.path+''" v-for="(item2) in item1.children" :key="item2.id">
+                <i class="el-icon-service"></i>{{ item2.authName }}</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
         </el-menu>
@@ -94,31 +43,47 @@
 
 <script>
 export default {
+  data () {
+    return {
+      menus: []
+    }
+  },
   // 如果用户没有登陆,/标识匹配到时,不能进入home.vue->显示login.vue
   // if(有没有正确的token){渲染home.vue}
   // if(没有token){改login,显示login.vue}
   // 代码位置,在渲染home.vue之前  当home.vue组件渲染完毕时->mounted()
   // beforeMount(){}
-  beforeMount() {
+  beforeMount () {
     if (!localStorage.getItem('token')) {
       this.$router.push({
         name: 'login'
       })
     }
   },
+  created () {
+    this.getMenus()
+  },
   methods: {
+    async getMenus () {
+      const res = await this.$http.get(`menus`)
+      const { meta: { msg, status }, data } = res.data
+      if (status === 200) {
+        this.menus = data
+      }
+    },
+    // 退出
     handleLoginout () {
       // 1.清除token
       localStorage.clear()
       // 2.跳转到Login
       this.$router.push({
-        name: "login"
+        name: 'login'
 
       })
-      //提示
+      // 提示
       this.$message.warning('退出成功')
     }
-  },
+  }
 }
 </script>
 

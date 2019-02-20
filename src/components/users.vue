@@ -258,8 +258,7 @@ export default {
       this.dialogFormVisibleAdd = false
       // 更新表格
       this.getTbableData()
-    },
-    // 添加用户-展示对话框
+    },    // 添加用户-展示对话框
     showDiaAddUsers () {
       this.formdata = {}
       this.dialogFormVisibleAdd = true

@@ -27,7 +27,9 @@
         prop控制的是该列中每一行单元格内容
 
         -->
-        <el-table :data="list" style="width: 100%">
+        <el-table 
+        v-loading = "loading"
+        :data="list" style="width: 100%">
             <el-table-column prop="id" label="#" width="80">
             </el-table-column>
             <el-table-column prop="username" label="姓名" width="100">
@@ -164,7 +166,8 @@ export default {
       // 保存角色的数据
       roles: [],
       currUsername: '',
-      currUserId: -1
+      currUserId: -1,
+      loading:true
     }
   },
   created () {
@@ -299,7 +302,11 @@ export default {
       if (status === 200) {
         this.total = data.total
         this.list = data.users
+        this.loading = false
         // console.log(this.list)
+      }else{
+          // token 失效
+        //   this.$message.warning(msg)
       }
     }
   }
